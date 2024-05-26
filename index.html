@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,10 +7,25 @@
 </head>
 <body>
   <h1>ManagMe - Project Management</h1>
-  <input type="text" id="project-name" placeholder="Project Name">
-  <textarea id="project-description" placeholder="Project Description"></textarea>
-  <button id="add-project">Add Project</button>
-  <ul id="project-list"></ul>
-  <script type="module" src="/src/main.ts"></script>
+  <div>
+    <h2>Projects</h2>
+    <input type="text" id="project-name" placeholder="Project Name">
+    <textarea id="project-description" placeholder="Project Description"></textarea>
+    <button id="add-project">Add Project</button>
+    <ul id="project-list"></ul>
+  </div>
+  <div>
+    <h2>Stories</h2>
+    <input type="text" id="story-name" placeholder="Story Name">
+    <textarea id="story-description" placeholder="Story Description"></textarea>
+    <select id="story-priority">
+      <option value="niski">Low</option>
+      <option value="średni">Medium</option>
+      <option value="wysoki">High</option>
+    </select>
+    <button id="add-story">Add Story</button>
+    <ul id="story-list"></ul>
+  </div>
+  <script type="module" src="./src/main.ts"></script>
 </body>
 </html>
