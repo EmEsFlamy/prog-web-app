@@ -1,9 +1,9 @@
 export interface Story {
-    id: string;
+    StoryId: string;
     nazwa: string;
     opis: string;
     priorytet: 'niski' | 'średni' | 'wysoki';
-    projekt: string;
+    projektId: string;
     dataUtworzenia: Date;
     stan: 'todo' | 'doing' | 'done';
     wlasciciel: string;
@@ -19,7 +19,7 @@ export interface Story {
     }
   
     getStoriesByProject(projectId: string): Story[] {
-      return this.stories.filter(story => story.projekt === projectId);
+      return this.stories.filter(story => story.projektId === projectId);
     }
   
     addStory(story: Story): void {
@@ -28,7 +28,7 @@ export interface Story {
     }
   
     updateStory(updatedStory: Story): void {
-      const index = this.stories.findIndex(story => story.id === updatedStory.id);
+      const index = this.stories.findIndex(story => story.StoryId === updatedStory.StoryId);
       if (index !== -1) {
         this.stories[index] = updatedStory;
         this.saveToLocalStorage();
@@ -36,7 +36,7 @@ export interface Story {
     }
   
     deleteStory(id: string): void {
-      this.stories = this.stories.filter(story => story.id !== id);
+      this.stories = this.stories.filter(story => story.StoryId !== id);
       this.saveToLocalStorage();
     }
   
