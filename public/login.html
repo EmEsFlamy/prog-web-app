@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Logowanie</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #e8f5e9;
+    }
+    .login-container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      width: 300px;
+      text-align: center;
+    }
+    .login-container h2 {
+      color: #1b5e20;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #a5d6a7;
+      border-radius: 5px;
+    }
+    .login-container button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s;
+    }
+    .login-container button:hover {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Logowanie</h2>
+    <form id="loginForm">
+      <input type="text" id="login" placeholder="Login" required>
+      <input type="password" id="password" placeholder="Hasło" required>
+      <button type="submit">Zaloguj</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      const login = document.getElementById('login').value;
+      const password = document.getElementById('password').value;
+      
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ login, password })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert('Zalogowano pomyślnie');
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        window.location.href = '/'; 
+      } else {
+        alert(data.message || 'Błąd logowania');
+      }
+    });
+  </script>
+</body>
+</html>
