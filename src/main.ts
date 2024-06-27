@@ -29,7 +29,16 @@ const taskPrioritySelect = document.getElementById('task-priority') as HTMLSelec
 const taskEstimatedTimeInput = document.getElementById('task-estimated-time') as HTMLInputElement;
 const addTaskButton = document.getElementById('add-task') as HTMLButtonElement;
 
-const loggedInUser = userAPI.getCurrentUser(); // Pobierz zalogowanego użytkownika
+const loggedInUser = userAPI.getCurrentUser(); 
+
+const toggleDarkModeButton = document.createElement('button');
+toggleDarkModeButton.textContent = 'Toggle Dark Mode';
+toggleDarkModeButton.classList.add('m-4', 'p-2', 'border', 'rounded', 'dark:bg-gray-700', 'dark:text-gray-100', 'bg-gray-200', 'text-gray-800');
+document.body.prepend(toggleDarkModeButton);
+
+toggleDarkModeButton.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+});
 
 const renderProjects = () => {
   projectList.innerHTML = '';
