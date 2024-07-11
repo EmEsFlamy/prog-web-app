@@ -17,9 +17,26 @@ export interface Story {
       this.storageKey = 'stories';
       this.stories = JSON.parse(localStorage.getItem(this.storageKey) || '[]');
     }
+
+    setActiveStory(StoryId: string): void {
+      localStorage.setItem("SelectedStory", StoryId);
+    }
+
+    getActiveStory(): string | null {
+      return localStorage.getItem("SelectedStory");
+    }
+
+    clearActiveStory() {
+      this.setActiveStory("");
+    }
   
     getStoriesByProject(projectId: string): Story[] {
       return this.stories.filter(story => story.projektId === projectId);
+    }
+
+    getStoryById(storyId: string): Story | undefined {
+      return this.stories.find(story => story.StoryId === storyId)
+
     }
   
     addStory(story: Story): void {
@@ -30,6 +47,7 @@ export interface Story {
     updateStory(updatedStory: Story): void {
       const index = this.stories.findIndex(story => story.StoryId === updatedStory.StoryId);
       if (index !== -1) {
+        console.log(index);
         this.stories[index] = updatedStory;
         this.saveToLocalStorage();
       }
@@ -38,6 +56,11 @@ export interface Story {
     deleteStory(id: string): void {
       this.stories = this.stories.filter(story => story.StoryId !== id);
       this.saveToLocalStorage();
+    }
+
+    clearStories(){
+      this.stories = []
+      this.saveToLocalStorage()
     }
   
     private saveToLocalStorage(): void {

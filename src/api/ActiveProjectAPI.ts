@@ -12,6 +12,10 @@ class ActiveProjectAPI {
     getActiveProject(): string | null {
       return localStorage.getItem(this.storageKey);
     }
+
+    clearActiveProject() {
+      this.setActiveProject("");
+    }
   }
   
   export default ActiveProjectAPI;

@@ -4,6 +4,7 @@ export interface Project {
     id: string;
     nazwa: string;
     opis: string;
+    dataDodania: Date;
   }
   
   class ProjectAPI {
@@ -39,6 +40,11 @@ export interface Project {
     deleteProject(id: string): void {
       this.projects = this.projects.filter(project => project.id !== id);
       this.saveToLocalStorage();
+    }
+
+    clearProjects(){
+      this.projects = []
+      this.saveToLocalStorage()
     }
   
     private saveToLocalStorage(): void {

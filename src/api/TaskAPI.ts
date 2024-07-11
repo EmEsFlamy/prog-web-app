@@ -52,6 +52,20 @@ class TaskAPI {
     return this.tasks.find(task => task.TaskId === taskId);
   }
 
+  clearTasks(){
+    this.tasks = []
+    this.saveToLocalStorage()
+  }
+
+  setTaskCompletionTime(taskId: string) {
+    const task = this.getTaskById(taskId);
+    if (task) {
+      task.dataZakonczenia = new Date();
+      this.updateTask(task);
+    }
+  }
+  
+
   private saveToLocalStorage() {
     localStorage.setItem('tasks', JSON.stringify(this.tasks));
   }

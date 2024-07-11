@@ -1,50 +1,69 @@
-// src/main.ts
-
-import './style.css';
-import ProjectAPI from './api/ProjectAPI';
-import UserAPI, { User } from './api/UserAPI';
-import ActiveProjectAPI from './api/ActiveProjectAPI';
-import StoryAPI from './api/StoryAPI';
-import TaskAPI from './api/TaskAPI';
+import "./style.css";
+import ProjectAPI, { Project } from "./api/ProjectAPI";
+import ActiveProjectAPI from "./api/ActiveProjectAPI";
+import StoryAPI, { Story } from "./api/StoryAPI";
+import TaskAPI from "./api/TaskAPI";
 
 const projectAPI = new ProjectAPI();
-const userAPI = new UserAPI();
 const activeProjectAPI = new ActiveProjectAPI();
 const storyAPI = new StoryAPI();
 const taskAPI = new TaskAPI();
 
-const projectList = document.getElementById('project-list') as HTMLUListElement;
-const projectNameInput = document.getElementById('project-name') as HTMLInputElement;
-const projectDescriptionInput = document.getElementById('project-description') as HTMLTextAreaElement;
-const addProjectButton = document.getElementById('add-project') as HTMLButtonElement;
-const storyList = document.getElementById('story-list') as HTMLUListElement;
-const storyNameInput = document.getElementById('story-name') as HTMLInputElement;
-const storyDescriptionInput = document.getElementById('story-description') as HTMLTextAreaElement;
-const storyPrioritySelect = document.getElementById('story-priority') as HTMLSelectElement;
-const addStoryButton = document.getElementById('add-story') as HTMLButtonElement;
-const taskList = document.getElementById('task-list') as HTMLUListElement;
-const taskNameInput = document.getElementById('task-name') as HTMLInputElement;
-const taskDescriptionInput = document.getElementById('task-description') as HTMLTextAreaElement;
-const taskPrioritySelect = document.getElementById('task-priority') as HTMLSelectElement;
-const taskEstimatedTimeInput = document.getElementById('task-estimated-time') as HTMLInputElement;
-const addTaskButton = document.getElementById('add-task') as HTMLButtonElement;
+const projectList = document.getElementById("project-list") as HTMLUListElement;
+const projectNameInput = document.getElementById(
+  "project-name"
+) as HTMLInputElement;
+const projectDescriptionInput = document.getElementById(
+  "project-description"
+) as HTMLTextAreaElement;
+const addProjectButton = document.getElementById(
+  "add-project"
+) as HTMLButtonElement;
+const storyNameInput = document.getElementById(
+  "story-name"
+) as HTMLInputElement;
+const storyDescriptionInput = document.getElementById(
+  "story-description"
+) as HTMLTextAreaElement;
+const storyPrioritySelect = document.getElementById(
+  "story-priority"
+) as HTMLSelectElement;
+const addStoryButton = document.getElementById(
+  "add-story"
+) as HTMLButtonElement;
+const taskNameInput = document.getElementById("task-name") as HTMLInputElement;
+const taskDescriptionInput = document.getElementById(
+  "task-description"
+) as HTMLTextAreaElement;
+const taskPrioritySelect = document.getElementById(
+  "task-priority"
+) as HTMLSelectElement;
+const taskEstimatedTimeInput = document.getElementById(
+  "task-estimated-time"
+) as HTMLInputElement;
+const addTaskButton = document.getElementById("add-task") as HTMLButtonElement;
+const loginUsernameInput = document.getElementById(
+  "login-username"
+) as HTMLInputElement;
+const loginPasswordInput = document.getElementById(
+  "login-password"
+) as HTMLInputElement;
+const loginButton = document.getElementById(
+  "login-button"
+) as HTMLButtonElement;
+const logoutButton = document.getElementById(
+  "logout-button"
+) as HTMLButtonElement;
+const mainContent = document.getElementById("main-content") as HTMLDivElement;
+const loginContent = document.getElementById("login-content") as HTMLDivElement;
 
-const loggedInUser = userAPI.getCurrentUser(); 
-
-const toggleDarkModeButton = document.createElement('button');
-toggleDarkModeButton.textContent = 'Toggle Dark Mode';
-toggleDarkModeButton.classList.add('m-4', 'p-2', 'border', 'rounded', 'dark:bg-gray-700', 'dark:text-gray-100', 'bg-gray-200', 'text-gray-800');
-document.body.prepend(toggleDarkModeButton);
-
-toggleDarkModeButton.addEventListener('click', () => {
-  document.documentElement.classList.toggle('dark');
-});
+let loggedInUser: any | null = null;
 
 const renderProjects = () => {
-  projectList.innerHTML = '';
+  projectList.innerHTML = "";
   const projects = projectAPI.getAllProjects();
-  projects.forEach(project => {
-    const li = document.createElement('li');
+  projects.forEach((project) => {
+    const li = document.createElement("li");
     li.innerHTML = `
       <h2>${project.nazwa}</h2>
       <p>${project.opis}</p>
@@ -54,160 +73,393 @@ const renderProjects = () => {
     projectList.appendChild(li);
   });
 
-  document.querySelectorAll('.select').forEach(button => {
-    button.addEventListener('click', () => {
+  document.querySelectorAll(".select").forEach((button) => {
+    button.addEventListener("click", () => {
       const id = (button as HTMLButtonElement).dataset.id!;
       activeProjectAPI.setActiveProject(id);
       renderStories();
     });
   });
 
-  document.querySelectorAll('.delete').forEach(button => {
-    button.addEventListener('click', () => {
+  document.querySelectorAll(".delete").forEach((button) => {
+    button.addEventListener("click", () => {
       const id = (button as HTMLButtonElement).dataset.id!;
+      const xx = storyAPI.getStoriesByProject(id);
+      xx.forEach((x) => {
+        const tasks = taskAPI.getTasksByStory(x.StoryId);
+        tasks.forEach((t) => {
+          taskAPI.deleteTask(t.TaskId);
+        });
+        storyAPI.deleteStory(x.StoryId);
+      });
       projectAPI.deleteProject(id);
+      activeProjectAPI.clearActiveProject();
       renderProjects();
+      renderStories();
     });
   });
 };
 
 const renderStories = () => {
-  storyList.innerHTML = '';
   const activeProjectId = activeProjectAPI.getActiveProject();
-  if (!activeProjectId) return;
+  const todoListElement = document.getElementById("todo-list");
+  const doingListElement = document.getElementById("doing-list");
+  const doneListElement = document.getElementById("done-list");
+  const todoListTask = document.getElementById("todo-list-task");
+  const doingListTask = document.getElementById("doing-list-task");
+  const doneListTask = document.getElementById("done-list-task");
+  if (!activeProjectId) {
+    if (todoListElement) {
+      todoListElement.innerHTML = "";
+    }
+    if (doingListElement) {
+      doingListElement.innerHTML = "";
+    }
+    if (doneListElement) {
+      doneListElement.innerHTML = "";
+    }
+    if (todoListTask) {
+      todoListTask.innerHTML = "";
+    }
+    if (doingListTask) {
+      doingListTask.innerHTML = "";
+    }
+    if (doneListTask) {
+      doneListTask.innerHTML = "";
+    }
+    return;
+  }
 
   const stories = storyAPI.getStoriesByProject(activeProjectId);
-  stories.forEach(story => {
-    const li = document.createElement('li');
+  if (todoListElement) {
+    todoListElement.innerHTML = "";
+  }
+  if (doingListElement) {
+    doingListElement.innerHTML = "";
+  }
+  if (doneListElement) {
+    doneListElement.innerHTML = "";
+  }
+  stories.forEach((story) => {
+    const li = document.createElement("li");
     li.innerHTML = `
       <h2>${story.nazwa}</h2>
       <p>${story.opis}</p>
       <p>Priorytet: ${story.priorytet}</p>
       <p>Stan: ${story.stan}</p>
-      <button class="view-tasks" data-id="${story.StoryId}">View Tasks</button>
       <button class="delete" data-id="${story.StoryId}">Delete</button>
+      <button class="todo" data-id="${story.StoryId}">Todo</button>
+      <button class="doing" data-id="${story.StoryId}">Doing</button> 
+      <button class="done" data-id="${story.StoryId}">Done</button>
+      <button class="selectStory" data-id="${story.StoryId}">Select</button>
     `;
-    storyList.appendChild(li);
+
+    li.setAttribute("data-id", story.StoryId);
+    switch (story.stan) {
+      case "todo":
+        todoListElement?.appendChild(li);
+        break;
+      case "doing":
+        doingListElement?.appendChild(li);
+        break;
+      case "done":
+        doneListElement?.appendChild(li);
+        break;
+    }
   });
 
-  document.querySelectorAll('.view-tasks').forEach(button => {
-    button.addEventListener('click', () => {
+  document.querySelectorAll(".selectStory").forEach((button) => {
+    button.addEventListener("click", () => {
       const id = (button as HTMLButtonElement).dataset.id!;
-      renderTasks(id);
+      storyAPI.setActiveStory(id);
+      renderStories();
     });
   });
 
-  document.querySelectorAll('.delete').forEach(button => {
-    button.addEventListener('click', () => {
+  document.querySelectorAll(".delete").forEach((button) => {
+    button.addEventListener("click", () => {
       const id = (button as HTMLButtonElement).dataset.id!;
+      const tasks = taskAPI.getTasksByStory(id);
+      tasks.forEach((t) => {
+        taskAPI.deleteTask(t.TaskId);
+      });
+      renderTasks(id);
       storyAPI.deleteStory(id);
+      storyAPI.clearActiveStory();
+      renderStories();
+    });
+  });
+
+  document.querySelectorAll(".todo").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = (button as HTMLButtonElement).dataset.id!;
+      const ss = storyAPI.getStoryById(id);
+      if (ss != null) {
+        ss.stan = "todo";
+        storyAPI.updateStory(ss);
+      }
+      renderStories();
+    });
+  });
+
+  document.querySelectorAll(".doing").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = (button as HTMLButtonElement).dataset.id!;
+      const ss = storyAPI.getStoryById(id);
+      if (ss != null) {
+        ss.stan = "doing";
+        storyAPI.updateStory(ss);
+      }
+      renderStories();
+    });
+  });
+
+  document.querySelectorAll(".done").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = (button as HTMLButtonElement).dataset.id!;
+      const ss = storyAPI.getStoryById(id);
+      if (ss != null) {
+        ss.stan = "done";
+        storyAPI.updateStory(ss);
+      }
       renderStories();
     });
   });
 };
 
 const renderTasks = (storyId: string) => {
-  taskList.innerHTML = '';
   const tasks = taskAPI.getTasksByStory(storyId);
-  tasks.forEach(task => {
-    const li = document.createElement('li');
+  const todoListTask = document.getElementById("todo-list-task");
+  const doingListTask = document.getElementById("doing-list-task");
+  const doneListTask = document.getElementById("done-list-task");
+  if (todoListTask) {
+    todoListTask.innerHTML = "";
+  }
+  if (doingListTask) {
+    doingListTask.innerHTML = "";
+  }
+  if (doneListTask) {
+    doneListTask.innerHTML = "";
+  }
+  tasks.forEach((task) => {
+    const li = document.createElement("li");
     li.innerHTML = `
       <h2>${task.nazwa}</h2>
       <p>${task.opis}</p>
       <p>Priorytet: ${task.priorytet}</p>
       <p>Stan: ${task.stan}</p>
-      <button class="assign" data-id="${task.TaskId}">Assign</button>
-      <button class="complete" data-id="${task.TaskId}">Complete</button>
-      <button class="delete" data-id="${task.TaskId}">Delete</button>
+      <p>Przewidywany czas: ${task.przewidywanyCzas} h</p>
+      <p>Użytkownik: ${loggedInUser.role}</p>
+      <button class="deleteTask" data-id="${task.TaskId}">Delete</button>
+      <button class="todoTask" data-id="${task.TaskId}">Todo</button>
+      <button class="doingTask" data-id="${task.TaskId}">Doing</button>
+      <button class="doneTask" data-id="${task.TaskId}">Done</button>
     `;
-    taskList.appendChild(li);
+    if (loggedInUser?.role == "admin") {
+      li.innerHTML += `
+      <select id="user-type-${task.TaskId}"> 
+        <option value="choose">Choose</option>
+        <option value="devops">Devops</option>
+        <option value="developer">Developer</option>
+      </select>
+      `;
+      li.addEventListener("change", () => {
+        const s = document.getElementById(
+          `user-type-${task.TaskId}`
+        ) as HTMLSelectElement;
+        const t = taskAPI.getTaskById(task.TaskId);
+        if (s != null && t != null) {
+          t.uzytkownikId = s.value;
+        }
+        renderTasks(storyAPI.getActiveStory()!);
+      });
+    }
+    li.setAttribute("data-id", task.TaskId);
+    switch (task.stan) {
+      case "todo":
+        todoListTask?.appendChild(li);
+        break;
+      case "doing":
+        doingListTask?.appendChild(li);
+        break;
+      case "done":
+        doneListTask?.appendChild(li);
+        break;
+    }
   });
 
-  document.querySelectorAll('.assign').forEach(button => {
-    button.addEventListener('click', () => {
-      const id = (button as HTMLButtonElement).dataset.id!;
-      assignTask(id);
-    });
-  });
-
-  document.querySelectorAll('.complete').forEach(button => {
-    button.addEventListener('click', () => {
-      const id = (button as HTMLButtonElement).dataset.id!;
-      completeTask(id);
-    });
-  });
-
-  document.querySelectorAll('.delete').forEach(button => {
-    button.addEventListener('click', () => {
+  document.querySelectorAll(".deleteTask").forEach((button) => {
+    button.addEventListener("click", () => {
       const id = (button as HTMLButtonElement).dataset.id!;
       taskAPI.deleteTask(id);
       renderTasks(storyId);
     });
   });
+
+  document.querySelectorAll(".todoTask").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = (button as HTMLButtonElement).dataset.id!;
+      const st = taskAPI.getTaskById(id);
+      if (st != null) {
+        st.stan = "todo";
+        taskAPI.updateTask(st);
+      }
+      renderTasks(storyId);
+    });
+  });
+
+  document.querySelectorAll(".doingTask").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = (button as HTMLButtonElement).dataset.id!;
+      const st = taskAPI.getTaskById(id);
+      if (st != null) {
+        st.stan = "doing";
+        taskAPI.updateTask(st);
+      }
+      renderTasks(storyId);
+    });
+  });
+
+  document.querySelectorAll(".doneTask").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = (button as HTMLButtonElement).dataset.id!;
+      const st = taskAPI.getTaskById(id);
+      if (st != null) {
+        st.stan = "done";
+        taskAPI.updateTask(st);
+        taskAPI.setTaskCompletionTime(id);
+      }
+      renderTasks(storyId);
+    });
+  });
 };
 
-const assignTask = (taskId: string) => {
-  const task = taskAPI.getTaskById(taskId);
-  if (task) {
-    task.uzytkownikId = loggedInUser.id;
-    task.stan = 'doing';
-    task.dataStartu = new Date();
-    taskAPI.updateTask(task);
-    renderTasks(task.TaskId);
-  }
-};
-
-const completeTask = (taskId: string) => {
-  const task = taskAPI.getTaskById(taskId);
-  if (task) {
-    task.stan = 'done';
-    task.dataZakonczenia = new Date();
-    taskAPI.updateTask(task);
-    renderTasks(task.TaskId);
-  }
-};
-
-addProjectButton.addEventListener('click', () => {
-  const id = Date.now().toString();
+addProjectButton.addEventListener("click", () => {
   const nazwa = projectNameInput.value;
   const opis = projectDescriptionInput.value;
-  projectAPI.addProject({ id, nazwa, opis });
+  const id = Date.now().toString();
+  const dataDodania = new Date();
+
+  projectNameInput.value = "";
+  projectDescriptionInput.value = "";
+
+  const newProject: Project = {
+    id,
+    nazwa,
+    opis,
+    dataDodania,
+  };
+
+  projectAPI.addProject(newProject);
   renderProjects();
 });
 
-addStoryButton.addEventListener('click', () => {
-  const id = Date.now().toString();
+addStoryButton.addEventListener("click", () => {
+  if (activeProjectAPI.getActiveProject() == "") {
+    return;
+  }
   const nazwa = storyNameInput.value;
   const opis = storyDescriptionInput.value;
-  const priorytet = storyPrioritySelect.value as 'niski' | 'średni' | 'wysoki';
+  const priorytet = storyPrioritySelect.value as "niski" | "średni" | "wysoki";
+  const stan = "todo";
+  const StoryId = Date.now().toString();
   const projektId = activeProjectAPI.getActiveProject()!;
-  storyAPI.addStory({ StoryId: id, nazwa, opis, priorytet, projektId, dataUtworzenia: new Date(), stan: 'todo', wlasciciel: loggedInUser.id });
-  renderStories();
-});
+  const wlasciciel = loggedInUser ? loggedInUser.id : "unknown";
 
-addTaskButton.addEventListener('click', () => {
-  const id = Date.now().toString();
-  const nazwa = taskNameInput.value;
-  const opis = taskDescriptionInput.value;
-  const priorytet = taskPrioritySelect.value as 'niski' | 'średni' | 'wysoki';
-  const storyId = (storyList.querySelector('li.selected') as HTMLElement)?.dataset.id;
-  if (!storyId) return;
-  const przewidywanyCzas = parseInt(taskEstimatedTimeInput.value); 
+  storyNameInput.value = "";
+  storyDescriptionInput.value = "";
 
-  taskAPI.addTask({
-    TaskId: id,
+  const newStory: Story = {
+    StoryId,
     nazwa,
     opis,
     priorytet,
-    historyjkaId: storyId,  
-    przewidywanyCzas,       
-    dataDodania: new Date(),
-    stan: 'todo',
-    uzytkownikId: ''        
-  });
-  renderTasks(storyId);
+    stan,
+    dataUtworzenia: new Date(),
+    projektId,
+    wlasciciel,
+  };
+
+  storyAPI.addStory(newStory);
+  renderStories();
 });
 
+addTaskButton.addEventListener("click", () => {
+  if (
+    storyAPI.getActiveStory() == "" ||
+    activeProjectAPI.getActiveProject() == ""
+  ) {
+    return;
+  }
+  const nazwa = taskNameInput.value;
+  const opis = taskDescriptionInput.value;
+  const priorytet = taskPrioritySelect.value as "niski" | "średni" | "wysoki";
+  const przewidywanyCzas = parseInt(taskEstimatedTimeInput.value);
+  const stan = "todo";
+  const TaskId = Date.now().toString();
+  const historyjkaId = storyAPI.getActiveStory()!;
+  const uzytkownikId = loggedInUser ? loggedInUser.id : "unknown";
+  taskNameInput.value = "";
+  taskDescriptionInput.value = "";
 
-renderProjects();
-renderStories();
+  taskAPI.addTask({
+    TaskId,
+    nazwa,
+    opis,
+    priorytet,
+    przewidywanyCzas,
+    stan,
+    dataDodania: new Date(),
+    historyjkaId,
+    uzytkownikId,
+  });
+  renderTasks(historyjkaId);
+});
+
+loginButton.addEventListener("click", async () => {
+  const login = loginUsernameInput.value;
+  const password = loginPasswordInput.value;
+
+  try {
+    const response = await fetch("http://localhost:3000/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ login, password }),
+    });
+    if (response.ok) {
+      const { token, user } = await response.json();
+      loggedInUser = user;
+      console.log(loggedInUser);
+      loginUsernameInput.value = "";
+      loginPasswordInput.value = "";
+      mainContent.style.display = "block";
+      loginContent.style.display = "none";
+      localStorage.setItem("token", JSON.stringify(token));
+      alert("Login successful!");
+    } else {
+      const errorData = await response.json();
+      alert(errorData.message);
+    }
+  } catch (error) {
+    alert("Invalid data");
+  }
+});
+
+logoutButton.addEventListener("click", () => {
+  taskAPI.clearTasks();
+  projectAPI.clearProjects();
+  storyAPI.clearStories();
+  activeProjectAPI.clearActiveProject();
+  storyAPI.clearActiveStory();
+  loginContent.style.display = "block";
+  mainContent.style.display = "none";
+  localStorage.removeItem("token");
+});
+
+const init = () => {
+  renderProjects();
+};
+
+init();
