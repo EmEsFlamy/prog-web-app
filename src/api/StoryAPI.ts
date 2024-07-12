@@ -2,7 +2,7 @@ export interface Story {
     StoryId: string;
     nazwa: string;
     opis: string;
-    priorytet: 'niski' | 'średni' | 'wysoki';
+    priorytet: 'low' | 'medium' | 'high';
     projektId: string;
     dataUtworzenia: Date;
     stan: 'todo' | 'doing' | 'done';

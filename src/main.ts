@@ -76,8 +76,11 @@ const renderProjects = () => {
   document.querySelectorAll(".select").forEach((button) => {
     button.addEventListener("click", () => {
       const id = (button as HTMLButtonElement).dataset.id!;
+      const storyId = taskAPI.getTaskByprojectId()!;
       activeProjectAPI.setActiveProject(id);
+      storyAPI.clearActiveStory();
       renderStories();
+      renderTasks(storyId);
     });
   });
 
@@ -145,8 +148,8 @@ const renderStories = () => {
     li.innerHTML = `
       <h2>${story.nazwa}</h2>
       <p>${story.opis}</p>
-      <p>Priorytet: ${story.priorytet}</p>
-      <p>Stan: ${story.stan}</p>
+      <p>Priority: ${story.priorytet}</p>
+      <p>Status: ${story.stan}</p>
       <button class="delete" data-id="${story.StoryId}">Delete</button>
       <button class="todo" data-id="${story.StoryId}">Todo</button>
       <button class="doing" data-id="${story.StoryId}">Doing</button> 
@@ -173,6 +176,7 @@ const renderStories = () => {
       const id = (button as HTMLButtonElement).dataset.id!;
       storyAPI.setActiveStory(id);
       renderStories();
+      renderTasks(id);
     });
   });
 
@@ -246,10 +250,10 @@ const renderTasks = (storyId: string) => {
     li.innerHTML = `
       <h2>${task.nazwa}</h2>
       <p>${task.opis}</p>
-      <p>Priorytet: ${task.priorytet}</p>
-      <p>Stan: ${task.stan}</p>
-      <p>Przewidywany czas: ${task.przewidywanyCzas} h</p>
-      <p>Użytkownik: ${loggedInUser.role}</p>
+      <p>Priority: ${task.priorytet}</p>
+      <p>Status: ${task.stan}</p>
+      <p>Estimated time: ${task.przewidywanyCzas} h</p>
+      <p>User: ${task.uzytkownikId}</p>
       <button class="deleteTask" data-id="${task.TaskId}">Delete</button>
       <button class="todoTask" data-id="${task.TaskId}">Todo</button>
       <button class="doingTask" data-id="${task.TaskId}">Doing</button>
@@ -257,22 +261,12 @@ const renderTasks = (storyId: string) => {
     `;
     if (loggedInUser?.role == "admin") {
       li.innerHTML += `
-      <select id="user-type-${task.TaskId}"> 
-        <option value="choose">Choose</option>
-        <option value="devops">Devops</option>
-        <option value="developer">Developer</option>
+      <select id="user-type" data-id="${task.TaskId}"> 
+        <option value="1">Choose</option>
+        <option value="2">Devops</option>
+        <option value="3">Developer</option>
       </select>
       `;
-      li.addEventListener("change", () => {
-        const s = document.getElementById(
-          `user-type-${task.TaskId}`
-        ) as HTMLSelectElement;
-        const t = taskAPI.getTaskById(task.TaskId);
-        if (s != null && t != null) {
-          t.uzytkownikId = s.value;
-        }
-        renderTasks(storyAPI.getActiveStory()!);
-      });
     }
     li.setAttribute("data-id", task.TaskId);
     switch (task.stan) {
@@ -287,6 +281,27 @@ const renderTasks = (storyId: string) => {
         break;
     }
   });
+
+  document.querySelectorAll("#user-type").forEach((li) => {
+  li.addEventListener("change", () => {
+    const select = event?.target as HTMLSelectElement;
+    const id = select.dataset.id;
+    const storyId = storyAPI.getActiveStory()!;
+
+     if(id){
+       const s = document.getElementById(
+         "user-type"
+       ) as HTMLSelectElement;
+       const t = taskAPI.getTaskById(id);
+       if (s != null && t != null) {
+         t.uzytkownikId = s.value;
+         taskAPI.updateTask(t);
+       }
+        renderTasks(storyId);
+     }
+   })
+  });
+  
 
   document.querySelectorAll(".deleteTask").forEach((button) => {
     button.addEventListener("click", () => {
@@ -339,9 +354,18 @@ addProjectButton.addEventListener("click", () => {
   const opis = projectDescriptionInput.value;
   const id = Date.now().toString();
   const dataDodania = new Date();
-
+ 
   projectNameInput.value = "";
   projectDescriptionInput.value = "";
+
+  if(!nazwa){
+    alert("Project title is requred.")
+    return;
+  }
+  if(!opis){
+    alert("Project description is requred.")
+    return;
+  }
 
   const newProject: Project = {
     id,
@@ -360,7 +384,7 @@ addStoryButton.addEventListener("click", () => {
   }
   const nazwa = storyNameInput.value;
   const opis = storyDescriptionInput.value;
-  const priorytet = storyPrioritySelect.value as "niski" | "średni" | "wysoki";
+  const priorytet = storyPrioritySelect.value as "low" | "medium" | "high";
   const stan = "todo";
   const StoryId = Date.now().toString();
   const projektId = activeProjectAPI.getActiveProject()!;
@@ -368,6 +392,15 @@ addStoryButton.addEventListener("click", () => {
 
   storyNameInput.value = "";
   storyDescriptionInput.value = "";
+
+  if(!nazwa){
+    alert("Story title is requred.")
+    return;
+  }
+  if(!opis){
+    alert("Story description is requred.")
+    return;
+  }
 
   const newStory: Story = {
     StoryId,
@@ -393,14 +426,28 @@ addTaskButton.addEventListener("click", () => {
   }
   const nazwa = taskNameInput.value;
   const opis = taskDescriptionInput.value;
-  const priorytet = taskPrioritySelect.value as "niski" | "średni" | "wysoki";
+  const priorytet = taskPrioritySelect.value as "low" | "medium" | "high";
   const przewidywanyCzas = parseInt(taskEstimatedTimeInput.value);
+
+  if(!nazwa) {
+    alert("Task title is requred.");
+    return;
+  }
+  if(!opis) {
+    alert("Task description is required.");
+    return;
+  }
+  if (isNaN(przewidywanyCzas) || przewidywanyCzas <= 0) {
+    alert("Estimated time must be a positive number.")
+    return;
+  }
   const stan = "todo";
   const TaskId = Date.now().toString();
   const historyjkaId = storyAPI.getActiveStory()!;
   const uzytkownikId = loggedInUser ? loggedInUser.id : "unknown";
   taskNameInput.value = "";
   taskDescriptionInput.value = "";
+  taskEstimatedTimeInput.value = "";
 
   taskAPI.addTask({
     TaskId,
@@ -458,8 +505,8 @@ logoutButton.addEventListener("click", () => {
   localStorage.removeItem("token");
 });
 
-const init = () => {
-  renderProjects();
-};
+// const init = () => {
+//   renderProjects();
+// };
 
-init();
+// init();

@@ -12,27 +12,26 @@
 </head>
 <body>
   <div class="toggle-switch">
-    <input type="checkbox" id="theme-switch" />
-    <label for="theme-switch">Dark Mode</label>
-  </div>
+    <button id="theme-switch"></button>
+</div>
   
   <h1>ManagMe - Project Management</h1>
 
   <div id="login-content">
     <h2>Login</h2>
+    <h5>Please enter your credentials</h5>
     <input type="text" id="login-username" placeholder="Username">
     <input type="password" id="login-password" placeholder="Password">
-    <button id="login-button">Login</button>
-    
+    <button id="login-button" >Login <i class="fa-solid fa-right-to-bracket"></i></button>
   </div> 
 
   <div id="main-content" style="display: none;">
-    <button id="logout-button">Log out</button>
+    <button id="logout-button" class="fa-solid fa-right-from-bracket"></button>
     <div id="project-div">
       <h2>Add Project</h2>
       <input type="text" id="project-name" placeholder="Project Name">
       <textarea id="project-description" placeholder="Project Description"></textarea>
-      <button id="add-project">Add Project</button>
+      <button id="add-project" class="fa-solid fa-diagram-project"> Add Project</button>
       <ul id="project-list"></ul>
     </div>
 
@@ -41,12 +40,30 @@
       <input type="text" id="story-name" placeholder="Story Name">
       <textarea id="story-description" placeholder="Story Description"></textarea>
       <select id="story-priority">
-        <option value="niski">Low</option>
-        <option value="średni">Medium</option>
-        <option value="wysoki">High</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
       </select>
-      <button id="add-story">Add Story</button>
+      <button id="add-story" class="fa-solid fa-plus"> Add Story</button>
       <ul id="story-list"></ul>
+    </div>
+
+    <div>
+      <h2>Stories Board</h2>
+      <div id="kanban-board">
+        <div id="todo" class="kanban-column">
+          <h3>To Do <i class="fa-solid fa-list-ul"></i></i></h3>
+          <ul id="todo-list"></ul>
+        </div>
+        <div id="doing" class="kanban-column">
+          <h3>Doing <i class="fa-solid fa-bars-progress"></i></h3>
+          <ul id="doing-list"></ul>
+        </div>
+        <div id="done" class="kanban-column">
+          <h3>Done <i class="fa-solid fa-check"></i></h3>
+          <ul id="done-list"></ul>
+        </div>
+      </div>
     </div>
 
     <div id="task-div">
@@ -54,45 +71,29 @@
       <input type="text" id="task-name" placeholder="Task Name">
       <textarea id="task-description" placeholder="Task Description"></textarea>
       <select id="task-priority">
-        <option value="niski">Low</option>
-        <option value="średni">Medium</option>
-        <option value="wysoki">High</option>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
       </select>
       <input type="number" id="task-estimated-time" placeholder="Estimated Time (hours)">
-      <button id="add-task">Add Task</button>
+      <button id="add-task" class="fa-solid fa-list-check"> Add Task</button>
       <ul id="task-list"></ul>
     </div>
 
-    <div>
-      <h2>Stories Board</h2>
-      <div id="kanban-board">
-        <div id="todo" class="kanban-column">
-          <h3>To Do</h3>
-          <ul id="todo-list"></ul>
-        </div>
-        <div id="doing" class="kanban-column">
-          <h3>Doing</h3>
-          <ul id="doing-list"></ul>
-        </div>
-        <div id="done" class="kanban-column">
-          <h3>Done</h3>
-          <ul id="done-list"></ul>
-        </div>
-      </div>
-    </div>
+    
     <div>
       <h2>Tasks Board</h2>
       <div id="kanban-board">
         <div id="todo" class="kanban-column">
-          <h3>To Do</h3>
+          <h3>To Do <i class="fa-solid fa-list-ul"></i></h3>
           <ul id="todo-list-task"></ul>
         </div>
         <div id="doing" class="kanban-column">
-          <h3>Doing</h3>
+          <h3>Doing <i class="fa-solid fa-bars-progress"></i></h3>
           <ul id="doing-list-task"></ul>
         </div>
         <div id="done" class="kanban-column">
-          <h3>Done</h3>
+          <h3>Done <i class="fa-solid fa-check"></i></h3>
           <ul id="done-list-task"></ul>
         </div>
       </div>
@@ -101,9 +102,11 @@
 
   <script type="module" src="./src/main.ts"></script>
   <script>
-    document.getElementById('theme-switch').addEventListener('change', function() {
-      document.body.classList.toggle('dark-mode', this.checked);
+    document.getElementById('theme-switch').addEventListener('click', function() {
+        this.classList.toggle('active');
+        document.body.classList.toggle('dark-mode');
     });
   </script>
+  <script src="https://kit.fontawesome.com/849458dc54.js" crossorigin="anonymous"></script>
 </body>
 </html>

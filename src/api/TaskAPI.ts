@@ -1,4 +1,4 @@
-export type Priority = 'niski' | 'średni' | 'wysoki';
+export type Priority = 'low' | 'medium' | 'high';
 export type TaskState = 'todo' | 'doing' | 'done';
 
 export interface Task {
@@ -13,6 +13,7 @@ export interface Task {
   dataStartu?: Date;
   dataZakonczenia?: Date;
   uzytkownikId?: string;
+  uzytkownikRole?: string;
 }
 
 class TaskAPI {
@@ -63,6 +64,11 @@ class TaskAPI {
       task.dataZakonczenia = new Date();
       this.updateTask(task);
     }
+  }
+
+  getTaskByprojectId() {
+    const project = localStorage.getItem("activeProject");
+    return project;
   }
   
 

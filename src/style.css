@@ -1,57 +1,33 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #e8f5e9; 
-  color: #2e7d32; 
+  background-color: #e8f5e9;
+  color: #2e7d32;
   text-align: center;
   padding: 20px;
 }
 
 h1, h2, h3 {
-  color: #1b5e20; 
+  color: #1b5e20;
 }
 
-#login-content {
-  display: block; 
-  margin: 0 auto; 
-  width: 50%; 
-  max-width: 500px; 
-  text-align: center; 
-}
-
-#project-div {
-  display: block; 
-  margin: 0 auto; 
-  width: 50%; 
-  max-width: 500px; 
-  text-align: center; 
-}
-
-#task-div {
-  display: block; 
-  margin: 0 auto; 
-  width: 50%; 
-  max-width: 500px; 
-  text-align: center; 
-}
-
-#story-div {
-  display: block; 
-  margin: 0 auto; 
-  width: 50%; 
-  max-width: 500px; 
-  text-align: center; 
+#login-content, #project-div, #task-div, #story-div {
+  display: block;
+  margin: 0 auto;
+  width: 50%;
+  max-width: 500px;
+  text-align: center;
 }
 
 #logout-button {
-  display: block; 
-  margin: 0 auto; 
-  width: 5%; 
-  max-width: 500px; 
-  text-align: center; 
+  display: block;
+  margin: 0 auto;
+  width: 5%;
+  max-width: 500px;
+  text-align: center;
 }
 
 button {
-  background-color: #4caf50; 
+  background-color: #4caf50;
   color: white;
   border: none;
   margin-top: 10px;
@@ -60,23 +36,33 @@ button {
   cursor: pointer;
   transition: background-color 0.3s;
   width: 50%;
-  
 }
 
 button:hover {
-  background-color: #388e3c; 
+  background-color: #388e3c;
 }
 
 textarea, input[type="text"], input[type="password"], select, input[type="number"] {
-  width: 100%; 
-  padding: 5px; 
-  border: 1px solid #a5d6a7; 
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #a5d6a7;
   border-radius: 5px;
-  background-color: #f1f8e9; 
+  background-color: #f1f8e9;
   margin-top: 5px;
   margin-bottom: 10px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
   display: block;
+  font-size: 16px;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="#2e7d32" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>') no-repeat right 10px center;
+  background-color: #f1f8e9;
+  background-size: 10px;
+  padding-right: 30px;
 }
 
 ul {
@@ -87,9 +73,9 @@ ul {
 li {
   margin-bottom: 10px;
   padding: 10px;
-  border: 1px solid #a5d6a7; 
+  border: 1px solid #a5d6a7;
   border-radius: 5px;
-  background-color: #e8f5e9; 
+  background-color: #e8f5e9;
 }
 
 .kanban-column {
@@ -97,16 +83,16 @@ li {
   vertical-align: top;
   width: 30%;
   padding: 10px;
-  border: 1px solid #a5d6a7; 
+  border: 1px solid #a5d6a7;
   border-radius: 5px;
-  background-color: #e8f5e9; 
+  background-color: #e8f5e9;
   margin-right: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-} 
+}
 
 .kanban-column h3 {
   text-align: center;
-  color: #2e7d32; 
+  color: #2e7d32;
 }
 
 .input-box {
@@ -117,58 +103,167 @@ li {
   margin-bottom: 15px;
 }
 
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
 
-body.dark-mode {
+.toggle-switch button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 30px;
+  background-color: #ccc;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  outline: none;
+}
+
+.toggle-switch button::before {
+  content: '\f186'; 
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  font-size: 20px;
+  color: #fff;
+  transition: color 0.3s;
+}
+
+.toggle-switch button.active {
+  background-color: #333;
+}
+
+.toggle-switch button.active::before {
+  content: '\f185'; 
+  color: yellow;
+}
+
+.toggle-switch label {
+  margin-left: 10px;
+}
+
+.dark-mode {
   background-color: #333;
   color: #ccc;
 }
 
-body.dark-mode h1, 
-body.dark-mode h2, 
-body.dark-mode h3 {
+.dark-mode h1, 
+.dark-mode h2, 
+.dark-mode h3 {
   color: #ddd;
 }
 
-body.dark-mode button {
+.dark-mode button {
   background-color: #575;
   color: #eee;
 }
 
-body.dark-mode button:hover {
+.dark-mode button:hover {
   background-color: #777;
 }
 
-body.dark-mode textarea, 
-body.dark-mode input[type="text"], 
-body.dark-mode input[type="password"], 
-body.dark-mode select, 
-body.dark-mode input[type="number"] {
+.dark-mode textarea, 
+.dark-mode input[type="text"], 
+.dark-mode input[type="password"], 
+.dark-mode select, 
+.dark-mode input[type="number"] {
   background-color: #444;
   color: #ccc;
   border: 1px solid #555;
 }
 
-body.dark-mode input::placeholder,
-body.dark-mode textarea::placeholder {
+.dark-mode select {
+  background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="#ccc" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>') no-repeat right 10px center;
+  background-color: #444;
+}
+
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
   color: #bbb;
 }
 
-body.dark-mode ul,
-body.dark-mode li {
+.dark-mode ul,
+.dark-mode li {
   background-color: #555;
   border: 1px solid #666;
 }
 
-body.dark-mode .kanban-column {
+.dark-mode .kanban-column {
   background-color: #444;
   border: 1px solid #666;
 }
 
-body.dark-mode .kanban-column h3 {
+.dark-mode .kanban-column h3 {
   color: #ddd;
 }
 
-body.dark-mode .input-box {
+.dark-mode .input-box {
   background-color: #444;
   border: 1px solid #666;
 }
+
+
+#project-list li {
+  padding: 8px;
+  margin-bottom: 5px;
+  border: 1px solid #a5d6a7;
+  border-radius: 5px;
+  background-color: #e8f5e9;
+  font-size: 14px; /* Smaller font size */
+}
+
+#project-list li h2 {
+  font-size: 16px; /* Smaller heading size */
+  margin: 0 0 5px 0;
+  color: #1b5e20;
+}
+
+#project-list li p {
+  font-size: 14px; /* Smaller paragraph size */
+  margin: 0 0 5px 0;
+  color: #2e7d32;
+}
+
+#project-list li button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 14px; /* Smaller button text size */
+  margin-right: 5px;
+}
+
+#project-list li button:hover {
+  background-color: #388e3c;
+}
+
+body.dark-mode #project-list li {
+  border: 1px solid #666;
+  background-color: #555;
+}
+
+body.dark-mode #project-list li h2 {
+  color: #ddd;
+}
+
+body.dark-mode #project-list li p {
+  color: #ccc;
+}
+
+body.dark-mode #project-list li button {
+  background-color: #575;
+  color: #eee;
+}
+
+body.dark-mode #project-list li button:hover {
+  background-color: #777;
+}
+
